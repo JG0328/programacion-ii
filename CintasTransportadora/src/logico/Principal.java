@@ -15,14 +15,14 @@ public class Principal extends Thread {
         Thread.sleep(2000);
         s1.AddUsuario(5);
         // Llegan dos más...
-        Thread.sleep(12000);
+        Thread.sleep(10000);
         s1.AddUsuario(2);
         s1.AddUsuario(3);
         // Uno más...
-        Thread.sleep(25000);
+        Thread.sleep(10000);
         s1.AddUsuario(6);
         // El sensor1 se queda esperando...
-        Thread.sleep(35000);
-        s1.interrupt();
+        Thread.sleep(10000);
+        s1.setTerminar(true);
     }
 }

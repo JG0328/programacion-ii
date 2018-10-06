@@ -14,6 +14,7 @@ public class Sensor extends Thread {
     private volatile boolean tengoCola;
     private volatile boolean primeraVez = false;
     private volatile boolean aviso = false;
+    private volatile boolean terminar;
 
     private volatile ArrayList<Integer> usuarios;
 
@@ -40,7 +41,7 @@ public class Sensor extends Thread {
                 EncenderCinta();
                 PasarUsuario();
                 tiempoFinal = System.currentTimeMillis() + tiempoEspera;
-            } else if (!tengoCola && !aviso) {
+            } else if (!tengoCola && !aviso && primeraVez) {
                 System.out.println(nombre + ": esperaré " + (tiempoEspera / 1000) + " segundos.");
                 aviso = true;
             } else if (System.currentTimeMillis() > tiempoFinal && !tengoCola) {
@@ -57,6 +58,17 @@ public class Sensor extends Thread {
                     aviso = false;
                 }
             }
+            synchronized (this) {
+                if (terminar) {
+                    break;
+                }
+            }
+        }
+        synchronized (this) {
+            synchronized (cinta) {
+                cinta.interrupt();
+            }
+            this.interrupt();
         }
     }
 
@@ -107,4 +119,12 @@ public class Sensor extends Thread {
             this.notify();
         }
     }
+
+    public void setTerminar(boolean t) {
+        synchronized (this) {
+            this.notify();
+            terminar = t;
+        }
+    }
+
 }

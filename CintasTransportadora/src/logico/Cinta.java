@@ -4,6 +4,7 @@ public class Cinta extends Thread {
     private String nombre;
     private volatile int estado;
     private volatile boolean activa;
+    private volatile boolean terminar;
 
     private volatile boolean primeraVez = true;
 
@@ -74,5 +75,12 @@ public class Cinta extends Thread {
 
     public void setActiva(boolean activa) {
         this.activa = activa;
+    }
+
+    public void setTerminar(boolean terminar) {
+        synchronized (this) {
+            this.terminar = terminar;
+            this.interrupt();
+        }
     }
 }
