@@ -27,9 +27,9 @@ public class Telefono extends Thread {
         if (t != null) {
             Thread.sleep(2000);
             System.out.println(numero + ": marcado " + n);
+            Thread.sleep(800);
+            System.out.println(numero + ": piii-piii");
             if (centralita.MarcarNumero(t)) {
-                Thread.sleep(800);
-                System.out.println(numero + ": piii-piii");
                 Thread.sleep(2000);
                 Hablar(n);
 
