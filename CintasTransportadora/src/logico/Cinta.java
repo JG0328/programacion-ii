@@ -2,21 +2,46 @@ package logico;
 
 public class Cinta extends Thread {
     private String nombre;
+    private volatile int estado;
+    private volatile boolean activa;
 
-    public Cinta(String nombre) {
-        this.nombre = nombre;
+    private volatile boolean primeraVez = true;
+
+    public Cinta(String n) {
+        nombre = n;
     }
 
     public void run() {
-        Start();
+        activa = true;
+        try {
+            Funcionar();
+        } catch (Exception e) {
+
+        }
     }
 
-    private void Start() {
-        System.out.println(nombre + ": Se ha empezado a mover.");
+    public void Funcionar() throws Exception {
+        while (true) {
+            if (estado == 1) {
+                Stop();
+            }
+        }
     }
 
-    private void Stop() {
-        System.out.println(nombre + ": Se ha detenido.");
+    public void Start() {
+        System.out.println(nombre + " : se empezó a mover.");
+    }
+
+    public void Stop() throws InterruptedException {
+        synchronized (this) {
+            System.out.println(nombre + " : se detuvo.");
+            activa = false;
+            wait();
+            activa = true;
+            estado = 0;
+            primeraVez = false;
+            Start();
+        }
     }
 
     public String getNombre() {
@@ -25,5 +50,29 @@ public class Cinta extends Thread {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public int getEstado() {
+        return estado;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
+    }
+
+    public boolean isPrimeraVez() {
+        return primeraVez;
+    }
+
+    public void setPrimeraVez(boolean primeraVez) {
+        this.primeraVez = primeraVez;
+    }
+
+    public boolean isActiva() {
+        return activa;
+    }
+
+    public void setActiva(boolean activa) {
+        this.activa = activa;
     }
 }
