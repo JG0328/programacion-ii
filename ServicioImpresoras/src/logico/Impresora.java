@@ -5,29 +5,41 @@ import java.util.ArrayList;
 public class Impresora extends Thread {
     private String nombre;
     private String tipo;
-    private volatile ArrayList<Documento> documentos;
     private volatile boolean imprimiendo;
+    private volatile Documento documento;
+    private volatile boolean primeraVez;
+    private volatile boolean encendida;
 
     public Impresora(String n, String t) {
         nombre = n;
         tipo = t;
-        documentos = new ArrayList<>();
     }
 
-    public void AddDocumento(Documento d) {
-        synchronized (this) {
-            if (imprimiendo) {
-                System.out.println(nombre + ": ocupada, documento añadido a la cola.");
-            }
-            documentos.add(d);
+    public void run() {
+        try {
+            Imprimir();
+        } catch (Exception e) {
+
         }
     }
 
     public void Imprimir() throws Exception {
-        synchronized (this) {
-            System.out.println(nombre + ": imprimiendo " + documentos.get(0).getNombre());
-            imprimiendo = true;
-            Thread.sleep(documentos.get(0).getImpTiempo() * 1000);
+        imprimiendo = true;
+        System.out.println(nombre + ": imprimiendo " + documento.getNombre());
+        Thread.sleep(documento.getImpTiempo() * 1000);
+        imprimiendo = false;
+        documento = null;
+
+        while (true) {
+            if (!encendida || documento != null) {
+                break;
+            }
+        }
+
+        if (!encendida) {
+            interrupt();
+        } else if (documento != null) {
+            Imprimir();
         }
     }
 
@@ -45,5 +57,45 @@ public class Impresora extends Thread {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public boolean isImprimiendo() {
+        synchronized (this) {
+            return imprimiendo;
+        }
+    }
+
+    public void setImprimiendo(boolean imprimiendo) {
+        this.imprimiendo = imprimiendo;
+    }
+
+    public Documento getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(Documento documento) {
+        synchronized (this) {
+            this.documento = documento;
+        }
+    }
+
+    public boolean isPrimeraVez() {
+        return primeraVez;
+    }
+
+    public void setPrimeraVez(boolean primeraVez) {
+        synchronized (this) {
+            this.primeraVez = primeraVez;
+        }
+    }
+
+    public boolean isEncendida() {
+        return encendida;
+    }
+
+    public void setEncendida(boolean encendida) {
+        synchronized (this) {
+            this.encendida = encendida;
+        }
     }
 }
